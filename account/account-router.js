@@ -3,50 +3,49 @@ const db = require("../data/dbConfig")
 
 const router = express.Router()
 
-router.get("/", async (req, res, next) =>{
+router.get("/", async (req, res, next) => {
     try{
-        const accounts = await db.select("*")
+        const accounts = await db.select("*").from("accounts")
         res.json(accounts)
-    } catch (err){
+    } catch (err) {
         next(err)
     }
 })
 
-router.get("/:id", async (req, res, next) =>{
+router.get("/:id", async (req, res, next) => {
     try{
-        const account = await db.select("*").where("id", req.params.id).first()
-        res.json(account)
-    } catch (err){
-        next(err)
-    }
-})
-
-
-router.post("/", async (req, res, next) =>{
-    try{
-
-
-        const [id] = await db("accounts").where("id", req.params.id).insert(payload)
         const account = await db("accounts").where("id", req.params.id).first()
-
         res.json(account)
-    } catch (err){
+    } catch (err) {
         next(err)
     }
 })
 
-router.put("/:id", async (req, res, next) =>{
+router.post("/", async (req, res, next) => {
+    try {
+        const payload = {
+            name: req.body.name,
+            budget: req.body.budget
+        }
+        const [id] = await db("accounts").insert(payload)
+        const account = await db("accounts").where("id", id).first()
+        res.json(account)
+    } catch (err) {
+        next(err)
+    }
+})
+
+router.put("/:id", async (req, res, next) => {
     try{
         const payload = {
             name: req.body.name,
-            budget: req.body.bodget
+            budget: req.body.budget
         }
-
         await db("accounts").where("id", req.params.id).update(payload)
-        const account = await db("accounts").where("id", req.params.id).first()
+        const  updatedAccount = await db("accounts").where("id", req.params.id).first()
 
-        res.json(account)
-    } catch (err){
+        res.json(updatedAccount)
+    } catch (err) {
         next(err)
     }
 })
@@ -59,6 +58,9 @@ router.delete("/:id", async (req, res, next) => {
         next(err)
     }
 })
+
+
+
 
 
 module.exports = router;
